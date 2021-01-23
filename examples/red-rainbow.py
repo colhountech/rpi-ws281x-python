@@ -15,7 +15,7 @@ LED_PIN = 18          # GPIO pin connected to the pixels (18 uses PWM!).
 # LED_PIN = 10        # GPIO pin connected to the pixels (10 uses SPI /dev/spidev0.0).
 LED_FREQ_HZ = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA = 10          # DMA channel to use for generating signal (try 10)
-LED_BRIGHTNESS = 255  # Set to 0 for darkest and 255 for brightest
+LED_BRIGHTNESS = 128  # Set to 0 for darkest and 255 for brightest
 LED_INVERT = False    # True to invert the signal (when using NPN transistor level shift)
 LED_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
@@ -28,6 +28,19 @@ def colorWipe(strip, color, wait_ms=50):
         strip.show()
         time.sleep(wait_ms / 1000.0)
 
+        
+def colorBounce(strip, color, wait_ms=50):
+
+    for i in range(strip.numPixels()):
+        strip.setPixelColor(i, color)
+        strip.show()
+        time.sleep(wait_ms / 1000.0)
+
+    for i in range(strip.numPixels()-1 , 0, -1):
+       strip.setPixelColor(i, 0)
+       strip.show()
+       time.sleep(wait_ms / 1000.0)
+        
 
 def theaterChase(strip, color, wait_ms=50, iterations=10):
     """Movie theater light style chaser animation."""
@@ -72,6 +85,18 @@ def rainbowCycle(strip, wait_ms=20, iterations=5):
         time.sleep(wait_ms / 1000.0)
 
 
+def sleepyTimeCycle(strip, wait_ms=20, iternations=5): 
+    pos = 0
+    
+    for count in range (6):
+	    for r in range (180, 255, 3):
+       		# print("pos is %s" % (pos))        
+        	strip.setPixelColor ( pos , Color(r,  255 - r, 0)  )
+        	strip.show()
+        	time.sleep(wait_ms / 1000.0)
+        	pos += 1
+
+        
 def theaterChaseRainbow(strip, wait_ms=50):
     """Rainbow movie theater light style chaser animation."""
     for j in range(256):
@@ -102,20 +127,19 @@ if __name__ == '__main__':
 
     try:
 
-        while True:
-            print('Color wipe animations.')
-            colorWipe(strip, Color(255, 0, 0))  # Red wipe
-            colorWipe(strip, Color(0, 255, 0))  # Blue wipe
-            colorWipe(strip, Color(0, 0, 255))  # Green wipe
-            print('Theater chase animations.')
-            theaterChase(strip, Color(127, 127, 127))  # White theater chase
-            theaterChase(strip, Color(127, 0, 0))  # Red theater chase
-            theaterChase(strip, Color(0, 0, 127))  # Blue theater chase
-            print('Rainbow animations.')
-            rainbow(strip)
-            rainbowCycle(strip)
-            theaterChaseRainbow(strip)
+        #while True:
+		for countdown in range (LED_BRIGHTNESS, 0,  -1 ):
+                    print countdown
+		    strip.setBrightness(countdown)
+		    sleepyTimeCycle(strip)
+                    print 'Going to sleep'
+		    time.sleep(10)
+		    print 'waking up'
+                colorWipe(strip, Color(0, 0, 0))
+		
 
     except KeyboardInterrupt:
         if args.clear:
             colorWipe(strip, Color(0, 0, 0), 10)
+
+
